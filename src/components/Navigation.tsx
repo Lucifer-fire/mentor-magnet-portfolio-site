@@ -1,10 +1,13 @@
 
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,10 +18,29 @@ const Navigation = () => {
   }, []);
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleNavigation = (item: string) => {
+    if (item === "AQI Predictor") {
+      navigate("/aqi");
       setIsMobileMenuOpen(false);
+    } else {
+      scrollToSection(item.toLowerCase());
     }
   };
 
@@ -28,16 +50,19 @@ const Navigation = () => {
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="font-bold text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <div 
+            className="font-bold text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent cursor-pointer"
+            onClick={() => navigate("/")}
+          >
             Portfolio
           </div>
           
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-8">
-            {["Home", "About", "Projects", "Experience", "Contact"].map((item) => (
+            {["Home", "About", "Projects", "Experience", "Contact", "AQI Predictor"].map((item) => (
               <button
                 key={item}
-                onClick={() => scrollToSection(item.toLowerCase())}
+                onClick={() => handleNavigation(item)}
                 className="text-foreground hover:text-blue-600 transition-colors duration-200 font-medium"
               >
                 {item}
@@ -58,10 +83,10 @@ const Navigation = () => {
         {isMobileMenuOpen && (
           <div className="md:hidden bg-background/95 backdrop-blur-md border-t">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {["Home", "About", "Projects", "Experience", "Contact"].map((item) => (
+              {["Home", "About", "Projects", "Experience", "Contact", "AQI Predictor"].map((item) => (
                 <button
                   key={item}
-                  onClick={() => scrollToSection(item.toLowerCase())}
+                  onClick={() => handleNavigation(item)}
                   className="block px-3 py-2 text-foreground hover:text-blue-600 transition-colors duration-200 font-medium w-full text-left"
                 >
                   {item}
